@@ -1,0 +1,49 @@
+!!! 5
+html(lang="en")
+  head
+    title Fennec Blockers
+    script(src='RGraph/libraries/RGraph.common.core.js')
+    script(src="RGraph/libraries/RGraph.common.context.js")
+    script(src="RGraph/libraries/RGraph.common.annotate.js")
+    script(src="RGraph/libraries/RGraph.common.tooltips.js")
+    script(src="RGraph/libraries/RGraph.common.zoom.js")
+    script(src="RGraph/libraries/RGraph.common.resizing.js")
+    script(src="RGraph/libraries/RGraph.common.key.js")
+    script(src="RGraph/libraries/RGraph.line.js")
+    script(src="lib/jquery-1.6.2.min.js ")
+    script(src="lib/underscore-min.js")
+
+    script
+      function drawGraph(blockerValues) {
+
+        var lines = [];
+        lines[0] = _(blockerValues).map(function(blockers) { return blockers.beta_count });
+        lines[1] = _(blockerValues).map(function(blockers) { return blockers.final_count });
+
+        var graph = new RGraph.Line('graph', lines);
+        graph.Set('chart.title', 'Blockers');				   
+        graph.Set('chart.colors', ['blue', 'red']);
+        graph.Set('chart.key', ['Beta', 'Final']);
+        graph.Set('chart.key.background', 'rgba(255,255,255,0.8)');
+
+        graph.Set('chart.linewidth', 2);
+        graph.Set('chart.shadow', true);
+        graph.Set('chart.shadow.offsetx', 0);
+        graph.Set('chart.shadow.offsety', 0);
+        graph.Set('chart.shadow.color', 'green');
+        graph.Set('chart.shadow.blur', 25);
+
+        graph.Set('chart.tooltips', _(blockerValues).map(function(blocker) { return blocker.time }));
+        graph.Draw();
+      }
+
+      $(document).ready(function() {
+        $.getJSON('/show', function(data) {
+          drawGraph(data);
+        });
+      });
+
+  body
+    div(align="center")
+      canvas(id="graph", width="1000", height="800")
+        [...]
